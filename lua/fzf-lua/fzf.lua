@@ -179,8 +179,8 @@ function M.raw_fzf(contents, fzf_cli_args, opts)
   --
   -- As a workaround we map buffer <C-c> to <Esc> for the fzf buffer
   -- `vim.keymap.set` to avoid breaking compatibility with older neovim versions
-  vim.api.nvim_buf_set_keymap(0, "", "<C-c>", "<Esc>", { noremap = false })
-  vim.api.nvim_buf_set_keymap(0, "t", "<C-c>", "<Esc>", { noremap = false })
+  -- vim.api.nvim_buf_set_keymap(0, '', '<C-c>', '<Esc>', { noremap = false })
+  -- vim.api.nvim_buf_set_keymap(0, 't', '<C-c>', '<Esc>', { noremap = false })
 
   local fh_trace = nil
   if opts.debug_tracelog then
