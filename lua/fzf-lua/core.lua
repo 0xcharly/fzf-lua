@@ -204,7 +204,7 @@ M.fzf = function(contents, opts)
   opts.winopts.preview = fzf_win.winopts.preview
   local selected, exit_code = fzf.raw_fzf(contents, M.build_fzf_cli(opts),
     { fzf_bin = opts.fzf_bin, cwd = opts.cwd, silent_fail = opts.silent_fail,
-      is_fzf_tmux = opts._is_fzf_tmux })
+      is_fzf_tmux = opts._is_fzf_tmux, debug_tracelog = opts.debug_tracelog })
   -- This was added by 'resume': when '--print-query' is specified
   -- we are guaranteed to have the query in the first line, save&remove it
   if selected and #selected > 0 and

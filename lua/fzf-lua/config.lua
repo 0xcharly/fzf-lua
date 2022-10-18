@@ -808,7 +808,7 @@ function M.normalize_opts(opts, defaults)
   -- also check if we need to override 'opts.prompt' from cli args
   -- if we don't override 'opts.prompt' 'FzfWin.save_query' will
   -- fail to remove the prompt part from resume saved query (#434)
-  for _, s in ipairs({ "fzf_args", "fzf_cli_args", "fzf_raw_args" }) do
+  for _, s in ipairs({ 'fzf_args', 'fzf_cli_args', 'fzf_raw_args', 'debug_tracelog' }) do
     if opts[s] == nil then
       opts[s] = M.globals[s]
     end

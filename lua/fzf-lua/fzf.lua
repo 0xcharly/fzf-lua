@@ -182,6 +182,11 @@ function M.raw_fzf(contents, fzf_cli_args, opts)
   vim.api.nvim_buf_set_keymap(0, "", "<C-c>", "<Esc>", { noremap = false })
   vim.api.nvim_buf_set_keymap(0, "t", "<C-c>", "<Esc>", { noremap = false })
 
+  local fh_trace = nil
+  if opts.debug_tracelog then
+    fh_trace = io.open(vim.fn.expand(opts.debug_tracelog), "wb")
+  end
+
   local co = coroutine.running()
   local jobstart = opts.is_fzf_tmux and vim.fn.jobstart or vim.fn.termopen
   jobstart({ "sh", "-c", cmd }, {
@@ -193,6 +198,11 @@ function M.raw_fzf(contents, fzf_cli_args, opts)
       ["SKIM_DEFAULT_COMMAND"] = FZF_DEFAULT_COMMAND,
     },
     on_exit = function(_, rc, _)
+      -- clear hook
+      if fh_trace then
+        debug.sethook(nil, "", 0)
+        fh_trace:close()
+      end
       local output = {}
       local f = io.open(outputtmpname)
       if f then
@@ -208,6 +218,23 @@ function M.raw_fzf(contents, fzf_cli_args, opts)
       coroutine.resume(co, output, rc)
     end
   })
+
+  if fh_trace then
+    debug.sethook(function(_, _)
+      local s = string.format("%s %s:%s %s\n",
+        os.date("%Y-%m-%dT%H:%M:%S"),
+        debug.getinfo(2, 'S').source,
+        debug.getinfo(2, 'l').currentline,
+        debug.getinfo(2, 'n').name)
+      -- local s = string.format("%s %s %s %s\n",
+      --   os.date("%Y-%m-%dT%H:%M:%S"),
+      --   vim.inspect(debug.getinfo(2, 'S')),
+      --   vim.inspect(debug.getinfo(2, 'l')),
+      --   vim.inspect(debug.getinfo(2, 'n')))
+      fh_trace:write(s)
+      fh_trace:flush()
+    end, "l")
+  end
 
   -- fzf-tmux spawns outside neovim, don't set filetype/insert mode
   if not opts.is_fzf_tmux then
