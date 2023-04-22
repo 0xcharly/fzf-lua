@@ -575,7 +575,10 @@ function Previewer.buffer_or_file:populate_preview_buf(entry_str)
     -- LSP 'jdt://' entries, see issue #195
     -- https://github.com/ibhagwan/fzf-lua/issues/195
     pcall(vim.api.nvim_win_call, self.win.preview_winid, function()
+      local save_ei = vim.o.eventignore
+      vim.o.eventignore = "all"
       vim.lsp.util.jump_to_location(entry, "utf-16", false)
+      vim.o.eventignore = save_ei
       self.preview_bufnr = vim.api.nvim_get_current_buf()
       -- since 'jump_to_location' reuses existing buffers we have to
       -- make sure we aren't unloading an exisiting buffer (#609)
